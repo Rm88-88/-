@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+            padding-bottom: 50px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            padding: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            scroll-margin-top: 20px;
+        }
+        .topic-description {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0 20px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            line-height: 1.5;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: right;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .toc {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            columns: 2;
+        }
+        .toc h2 {
+            column-span: all;
+            margin-top: 0;
+        }
+        .toc a {
+            display: block;
+            color: #2980b9;
+            text-decoration: none;
+            margin: 5px 0;
+            padding: 5px;
+            break-inside: avoid-column;
+        }
+        .toc a:hover {
+            background-color: #f5f5f5;
+            border-radius: 3px;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .back-to-top:hover {
+            background-color: #2980b9;
+        }
+        .category-separator {
+            margin: 10px 0;
+            border-top: 2px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <h1>המדריך המקיף ל-SQL</h1>
+
+    <div class="toc">
+        <h2>תוכן עניינים</h2>
+        <a href="#aggregation">אגרגציה וקיבוץ</a>
+        <a href="#analysis">אנליזה סטטיסטית</a>
+        <a href="#binary">בינארי - נתונים בינאריים</a>
+        <a href="#views">דוחות ותצוגות</a>
+        <a href="#indexes">הגדרות אינדקסים</a>
+        <a href="#triggers">הפעלות אוטומטיות (Triggers)</a>
+        <a href="#joins">חיבורי טבלאות</a>
+        <a href="#temp">טבלאות זמניות</a>
+        <a href="#text">טקסט וסוגיו</a>
+        <a href="#integer">מספרים שלמים</a>
+        <a href="#real">מספרים עשרוניים</a>
+        <a href="#stored">נהלים שמורים</a>
+        <a href="#sequences">ניהול רצפים</a>
+        <a href="#security">ניהול אבטחה והרשאות</a>
+        <a href="#transactions">ניהול טרנזקציות</a>
+        <a href="#backup">ניהול גיבויים ושחזורים</a>
+        <a href="#spatial">נתונים גיאומטריים</a>
+        <a href="#temporal">נתוני זמן ותאריך</a>
+        <a href="#constraints">סוגי אילוצים</a>
+        <a href="#operators">סוגי אופרטורים</a>
+        <a href="#errors">ספי שגיאה וטיפול בחריגים</a>
+        <a href="#performance">עקרונות אופטימיזציה</a>
+        <a href="#basic-commands">פקודות בסיסיות</a>
+        <a href="#functions">פונקציות נפוצות</a>
+        <a href="#cursors">קורסורים</a>
+        <a href="#query">שאילתות מתקדמות</a>
+    </div>
+
+<!-- קודם נתקן את הטבלה הראשונה עם הפונקציות החסרות -->
+<h2 id="aggregation">אגרגציה וקיבוץ</h2>
+<div class="topic-description">
+    אגרגציה וקיבוץ מאפשרים לבצע חישובים על קבוצות של נתונים. באמצעותם ניתן לחשב סיכומים, ממוצעים, מינימום ומקסימום על קבוצות של רשומות. זהו כלי חיוני לניתוח נתונים וליצירת דוחות סיכום.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>GROUP BY</td>
+        <td>קבץ לפי</td>
+        <td>יצירת קבוצות של נתונים</td>
+        <td>SELECT city, COUNT(*) FROM users GROUP BY city</td>
+    </tr>
+    <tr>
+        <td>HAVING</td>
+        <td>בתנאי ש</td>
+        <td>סינון תוצאות לאחר קיבוץ</td>
+        <td>GROUP BY city HAVING COUNT(*) > 100</td>
+    </tr>
+    <tr>
+        <td>ROLLUP</td>
+        <td>סיכום מדורג</td>
+        <td>יצירת סיכומי ביניים</td>
+        <td>GROUP BY ROLLUP(department, position)</td>
+    </tr>
+    <tr>
+        <td>COUNT()</td>
+        <td>ספירה</td>
+        <td>ספירת רשומות</td>
+        <td>SELECT COUNT(*) FROM employees</td>
+    </tr>
+    <tr>
+        <td>SUM()</td>
+        <td>סכום</td>
+        <td>חישוב סכום של עמודה</td>
+        <td>SELECT SUM(salary) FROM employees</td>
+    </tr>
+    <tr>
+        <td>AVG()</td>
+        <td>ממוצע</td>
+        <td>חישוב ממוצע של עמודה</td>
+        <td>SELECT AVG(price) FROM products</td>
+    </tr>
+    <tr>
+        <td>MIN()/MAX()</td>
+        <td>מינימום/מקסימום</td>
+        <td>מציאת ערך מינימלי או מקסימלי</td>
+        <td>SELECT MIN(price), MAX(price) FROM products</td>
+    </tr>
+</table>
+
+<!-- נתקן את הטבלה השנייה עם הפונקציות החסרות -->
+<h2 id="analysis">אנליזה סטטיסטית</h2>
+<div class="topic-description">
+    כלים לביצוע ניתוחים סטטיסטיים על הנתונים. מאפשרים לחשב מדדים סטטיסטיים, לבצע חישובי דירוג, ולהפיק תובנות מתקדמות מהנתונים.
+</div>
+<table>
+    <tr>
+        <th>פונקציה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>RANK()</td>
+        <td>דירוג</td>
+        <td>דירוג שורות לפי ערך</td>
+        <td>SELECT RANK() OVER (ORDER BY salary)</td>
+    </tr>
+    <tr>
+        <td>DENSE_RANK()</td>
+        <td>דירוג רציף</td>
+        <td>דירוג ללא דילוגים</td>
+        <td>SELECT DENSE_RANK() OVER (ORDER BY salary)</td>
+    </tr>
+    <tr>
+        <td>PERCENTILE_CONT</td>
+        <td>אחוזון רציף</td>
+        <td>חישוב אחוזונים</td>
+        <td>SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price)</td>
+    </tr>
+    <tr>
+        <td>STDDEV</td>
+        <td>סטיית תקן</td>
+        <td>חישוב סטיית תקן</td>
+        <td>SELECT STDDEV(salary) FROM employees</td>
+    </tr>
+    <tr>
+        <td>LAG()</td>
+        <td>ערך קודם</td>
+        <td>גישה לשורה הקודמת</td>
+        <td>SELECT LAG(price) OVER (ORDER BY date)</td>
+    </tr>
+    <tr>
+        <td>LEAD()</td>
+        <td>ערך הבא</td>
+        <td>גישה לשורה הבאה</td>
+        <td>SELECT LEAD(price) OVER (ORDER BY date)</td>
+    </tr>
+    <tr>
+        <td>NTILE()</td>
+        <td>חלוקה לקבוצות</td>
+        <td>חלוקה למספר קבוצות שווה</td>
+        <td>SELECT NTILE(4) OVER (ORDER BY salary)</td>
+    </tr>
+</table>
+
+<!-- נוסיף את הטבלה השלישית -->
+<h2 id="binary">בינארי - נתונים בינאריים</h2>
+<div class="topic-description">
+    טיפוסי נתונים בינאריים משמשים לאחסון מידע לא מעובד כמו קבצים, תמונות ומסמכים בבסיס הנתונים. הם מאפשרים שמירת מידע בפורמט הגולמי שלו.
+</div>
+<table>
+    <tr>
+        <th>סוג נתונים</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>BINARY</td>
+        <td>בינארי קבוע</td>
+        <td>מערך בייטים באורך קבוע</td>
+        <td>BINARY(10) - שדה בינארי באורך 10 בייטים</td>
+    </tr>
+    <tr>
+        <td>VARBINARY</td>
+        <td>בינארי משתנה</td>
+        <td>מערך בייטים באורך משתנה</td>
+        <td>VARBINARY(MAX) - שדה בינארי עד 2GB</td>
+    </tr>
+    <tr>
+        <td>BLOB</td>
+        <td>אובייקט בינארי גדול</td>
+        <td>אחסון קבצים גדולים</td>
+        <td>BLOB - לאחסון תמונות ומסמכים</td>
+    </tr>
+    <tr>
+        <td>IMAGE</td>
+        <td>תמונה</td>
+        <td>אחסון תמונות (מיושן)</td>
+        <td>IMAGE - שדה מיועד לתמונות</td>
+    </tr>
+</table>
+
+<!-- נוסיף את הטבלה הרביעית -->
+<h2 id="views">דוחות ותצוגות</h2>
+<div class="topic-description">
+    תצוגות (Views) הן שאילתות שמורות המתפקדות כטבלאות וירטואליות. הן מאפשרות להגדיר שכבת הפשטה מעל הטבלאות הפיזיות ולפשט גישה למידע מורכב.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>CREATE VIEW</td>
+        <td>יצירת תצוגה</td>
+        <td>יצירת תצוגה חדשה</td>
+        <td>CREATE VIEW active_users AS SELECT * FROM users WHERE status = 'active'</td>
+    </tr>
+    <tr>
+        <td>ALTER VIEW</td>
+        <td>שינוי תצוגה</td>
+        <td>עדכון הגדרת תצוגה קיימת</td>
+        <td>ALTER VIEW active_users AS SELECT id, name FROM users WHERE status = 'active'</td>
+    </tr>
+    <tr>
+        <td>DROP VIEW</td>
+        <td>מחיקת תצוגה</td>
+        <td>הסרת תצוגה מבסיס הנתונים</td>
+        <td>DROP VIEW active_users</td>
+    </tr>
+    <tr>
+        <td>MATERIALIZED VIEW</td>
+        <td>תצוגה ממומשת</td>
+        <td>תצוגה המאחסנת את תוצאות השאילתה</td>
+        <td>CREATE MATERIALIZED VIEW summary AS SELECT COUNT(*) FROM orders</td>
+    </tr>
+</table>
+<h2 id="indexes">הגדרות אינדקסים</h2>
+<div class="topic-description">
+    אינדקסים הם מבני נתונים המשפרים את ביצועי השאילתות על ידי יצירת מפתחות חיפוש מהירים. הם חיוניים לאופטימיזציה של בסיס הנתונים אך דורשים איזון בין ביצועי קריאה לביצועי כתיבה.
+</div>
+<table>
+    <tr>
+        <th>סוג אינדקס</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>CLUSTERED INDEX</td>
+        <td>אינדקס מקובץ</td>
+        <td>קובע את הסדר הפיזי של הנתונים בטבלה</td>
+        <td>CREATE CLUSTERED INDEX idx_name ON users(id)</td>
+    </tr>
+    <tr>
+        <td>NONCLUSTERED INDEX</td>
+        <td>אינדקס לא מקובץ</td>
+        <td>יוצר מבנה נפרד לחיפוש מהיר</td>
+        <td>CREATE INDEX idx_email ON users(email)</td>
+    </tr>
+    <tr>
+        <td>UNIQUE INDEX</td>
+        <td>אינדקס ייחודי</td>
+        <td>מבטיח ייחודיות של ערכים</td>
+        <td>CREATE UNIQUE INDEX idx_unique ON users(username)</td>
+    </tr>
+    <tr>
+        <td>COVERING INDEX</td>
+        <td>אינדקס מכסה</td>
+        <td>כולל את כל העמודות הנדרשות לשאילתה</td>
+        <td>CREATE INDEX idx_cover ON users(id, name, email) INCLUDE (phone)</td>
+    </tr>
+</table>
+
+<h2 id="triggers">הפעלות אוטומטיות (Triggers)</h2>
+<div class="topic-description">
+    טריגרים הם פרוצדורות המופעלות אוטומטית בתגובה לאירועים בבסיס הנתונים. הם משמשים לאכיפת חוקים עסקיים, תיעוד שינויים ושמירה על שלמות הנתונים.
+</div>
+<table>
+    <tr>
+        <th>סוג טריגר</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>AFTER TRIGGER</td>
+        <td>טריגר לאחר פעולה</td>
+        <td>מופעל אחרי ביצוע פעולה</td>
+        <td>CREATE TRIGGER tr_after_insert AFTER INSERT ON users FOR EACH ROW</td>
+    </tr>
+    <tr>
+        <td>BEFORE TRIGGER</td>
+        <td>טריגר לפני פעולה</td>
+        <td>מופעל לפני ביצוע פעולה</td>
+        <td>CREATE TRIGGER tr_before_delete BEFORE DELETE ON orders</td>
+    </tr>
+    <tr>
+        <td>INSTEAD OF</td>
+        <td>טריגר במקום</td>
+        <td>מחליף את הפעולה המקורית</td>
+        <td>CREATE TRIGGER tr_instead_update INSTEAD OF UPDATE ON views</td>
+    </tr>
+    <tr>
+        <td>DDL TRIGGER</td>
+        <td>טריגר מבנה נתונים</td>
+        <td>מגיב לשינויים במבנה הנתונים</td>
+        <td>CREATE TRIGGER tr_prevent_drop ON DATABASE FOR DROP_TABLE</td>
+    </tr>
+</table>
+
+<h2 id="joins">חיבורי טבלאות</h2>
+<div class="topic-description">
+    חיבורי טבלאות מאפשרים לשלב מידע ממספר טבלאות לתוצאה אחת. הם מהווים את הבסיס לשאילתות מורכבות ולניתוח נתונים מקיף.
+</div>
+<table>
+    <tr>
+        <th>סוג חיבור</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>INNER JOIN</td>
+        <td>חיבור פנימי</td>
+        <td>מחזיר רק רשומות תואמות</td>
+        <td>SELECT * FROM orders INNER JOIN users ON orders.user_id = users.id</td>
+    </tr>
+    <tr>
+        <td>LEFT JOIN</td>
+        <td>חיבור שמאלי</td>
+        <td>כולל את כל הרשומות מהטבלה השמאלית</td>
+        <td>SELECT * FROM users LEFT JOIN orders ON users.id = orders.user_id</td>
+    </tr>
+    <tr>
+        <td>RIGHT JOIN</td>
+        <td>חיבור ימני</td>
+        <td>כולל את כל הרשומות מהטבלה הימנית</td>
+        <td>SELECT * FROM orders RIGHT JOIN users ON orders.user_id = users.id</td>
+    </tr>
+    <tr>
+        <td>FULL OUTER JOIN</td>
+        <td>חיבור חיצוני מלא</td>
+        <td>כולל את כל הרשומות משתי הטבלאות</td>
+        <td>SELECT * FROM users FULL OUTER JOIN orders ON users.id = orders.user_id</td>
+    </tr>
+    <tr>
+        <td>CROSS JOIN</td>
+        <td>חיבור צולב</td>
+        <td>מייצר מכפלה קרטזית של הטבלאות</td>
+        <td>SELECT * FROM sizes CROSS JOIN colors</td>
+    </tr>
+</table>
+<h2 id="temp">טבלאות זמניות</h2>
+<div class="topic-description">
+    טבלאות זמניות משמשות לאחסון נתונים באופן זמני במהלך עיבוד. הן שימושיות לשמירת תוצאות ביניים ולשיפור ביצועים בשאילתות מורכבות.
+</div>
+<table>
+    <tr>
+        <th>סוג טבלה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>Local Temp (#)</td>
+        <td>טבלה זמנית מקומית</td>
+        <td>נגישה רק לחיבור הנוכחי</td>
+        <td>CREATE TABLE #temp (id INT, name VARCHAR(50))</td>
+    </tr>
+    <tr>
+        <td>Global Temp (##)</td>
+        <td>טבלה זמנית גלובלית</td>
+        <td>נגישה לכל החיבורים</td>
+        <td>CREATE TABLE ##globalTemp (id INT, data TEXT)</td>
+    </tr>
+    <tr>
+        <td>Table Variable</td>
+        <td>משתנה טבלה</td>
+        <td>משתנה בעל מבנה טבלה</td>
+        <td>DECLARE @tempTable TABLE (id INT, name NVARCHAR(100))</td>
+    </tr>
+    <tr>
+        <td>Memory-Optimized</td>
+        <td>טבלה מותאמת זיכרון</td>
+        <td>טבלה זמנית בזיכרון</td>
+        <td>CREATE TABLE #memTemp (id INT) WITH (MEMORY_OPTIMIZED = ON)</td>
+    </tr>
+</table>
+
+<h2 id="text">טקסט וסוגיו</h2>
+<div class="topic-description">
+    טיפוסי נתונים טקסטואליים משמשים לאחסון מחרוזות ותוכן טקסטואלי. הם מגיעים במגוון גדלים ותמיכה בקידודים שונים.
+</div>
+<table>
+    <tr>
+        <th>סוג נתונים</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>CHAR</td>
+        <td>תווים באורך קבוע</td>
+        <td>מחרוזת באורך קבוע</td>
+        <td>CHAR(10) - שדה של 10 תווים בדיוק</td>
+    </tr>
+    <tr>
+        <td>VARCHAR</td>
+        <td>תווים באורך משתנה</td>
+        <td>מחרוזת באורך משתנה</td>
+        <td>VARCHAR(255) - עד 255 תווים</td>
+    </tr>
+    <tr>
+        <td>NVARCHAR</td>
+        <td>תווים יוניקוד</td>
+        <td>תמיכה בתווים מיוחדים</td>
+        <td>NVARCHAR(MAX) - טקסט ארוך עם תמיכה ביוניקוד</td>
+    </tr>
+    <tr>
+        <td>TEXT</td>
+        <td>טקסט ארוך</td>
+        <td>לאחסון טקסט ארוך (מיושן)</td>
+        <td>TEXT - שדה טקסט ארוך</td>
+    </tr>
+</table>
+
+<h2 id="integer">מספרים שלמים</h2>
+<div class="topic-description">
+    טיפוסי נתונים למספרים שלמים מאפשרים אחסון מספרים בגדלים שונים. הבחירה בסוג הנכון חשובה לחיסכון במקום ולביצועים.
+</div>
+<table>
+    <tr>
+        <th>סוג נתונים</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>טווח ערכים</th>
+    </tr>
+    <tr>
+        <td>TINYINT</td>
+        <td>מספר שלם קטן</td>
+        <td>1 בית</td>
+        <td>0 עד 255</td>
+    </tr>
+    <tr>
+        <td>SMALLINT</td>
+        <td>מספר שלם בינוני</td>
+        <td>2 בתים</td>
+        <td>-32,768 עד 32,767</td>
+    </tr>
+    <tr>
+        <td>INT</td>
+        <td>מספר שלם</td>
+        <td>4 בתים</td>
+        <td>-2.1 מיליארד עד 2.1 מיליארד</td>
+    </tr>
+    <tr>
+        <td>BIGINT</td>
+        <td>מספר שלם גדול</td>
+        <td>8 בתים</td>
+        <td>-2^63 עד 2^63-1</td>
+    </tr>
+</table>
+
+<h2 id="real">מספרים עשרוניים</h2>
+<div class="topic-description">
+    טיפוסי נתונים למספרים עשרוניים מאפשרים אחסון מספרים עם נקודה עשרונית. הם חיוניים לחישובים מדויקים ולעבודה עם כספים.
+</div>
+<table>
+    <tr>
+        <th>סוג נתונים</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דיוק</th>
+    </tr>
+    <tr>
+        <td>DECIMAL</td>
+        <td>מספר עשרוני מדויק</td>
+        <td>אחסון מדויק של מספרים עשרוניים</td>
+        <td>DECIMAL(10,2) - 10 ספרות, 2 אחרי הנקודה</td>
+    </tr>
+    <tr>
+        <td>NUMERIC</td>
+        <td>מספר מספרי</td>
+        <td>זהה ל-DECIMAL</td>
+        <td>NUMERIC(16,4) - 16 ספרות, 4 אחרי הנקודה</td>
+    </tr>
+    <tr>
+        <td>FLOAT</td>
+        <td>מספר צף</td>
+        <td>לחישובים מדעיים</td>
+        <td>דיוק של כ-15 ספרות</td>
+    </tr>
+    <tr>
+        <td>REAL</td>
+        <td>מספר ממשי</td>
+        <td>גרסה קטנה יותר של FLOAT</td>
+        <td>דיוק של כ-7 ספרות</td>
+    </tr>
+</table>
+<h2 id="stored">נהלים שמורים</h2>
+<div class="topic-description">
+    נהלים שמורים הם פרוצדורות המאוחסנות במסד הנתונים וניתן להפעילן לביצוע משימות מסוימות. הם משפרים את ביצועי השאילתות ואת יכולות התחזוקה של מסד הנתונים.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+	    <tr>
+        <td>Stored Procedure</td>
+        <td>נוהל שמור</td>
+        <td>קוד SQL לביצוע פעולות</td>
+        <td>CREATE PROCEDURE GetUserOrders @userId INT AS BEGIN SELECT * FROM orders WHERE user_id = @userId END</td>
+    </tr>
+    <tr>
+        <td>Function</td>
+        <td>פונקציה</td>
+        <td>מחזירה ערך</td>
+        <td>CREATE FUNCTION CalcTotal (@price DECIMAL) RETURNS DECIMAL AS BEGIN RETURN @price * 1.17 END</td>
+    </tr>
+    <tr>
+        <td>Table-Valued Function</td>
+        <td>פונקציה מחזירת טבלה</td>
+        <td>מחזירה טבלת תוצאות</td>
+        <td>CREATE FUNCTION GetActiveUsers() RETURNS TABLE AS RETURN SELECT * FROM users WHERE status = 'active'</td>
+    </tr>
+    <tr>
+        <td>Aggregate Function</td>
+        <td>פונקציית צבירה</td>
+        <td>מבצעת חישוב על קבוצת ערכים</td>
+        <td>CREATE AGGREGATE MyAvg(@value INT) RETURNS INT</td>
+    </tr>
+    <tr>
+        <td>CREATE PROCEDURE</td>
+        <td>יצירת פרוצדורה</td>
+        <td>יצירת נוהל שמור חדש</td>
+        <td>CREATE PROCEDURE proc_name AS BEGIN SELECT * FROM users END</td>
+    </tr>
+    <tr>
+        <td>EXEC</td>
+        <td>ביצוע פרוצדורה</td>
+        <td>הפעלת נוהל שמור</td>
+        <td>EXEC proc_name</td>
+    </tr>
+    <tr>
+        <td>ALTER PROCEDURE</td>
+        <td>שינוי פרוצדורה</td>
+        <td>עדכון נוהל שמור קיים</td>
+        <td>ALTER PROCEDURE proc_name AS BEGIN SELECT * FROM employees END</td>
+    </tr>
+</table>
+
+<h2 id="sequences">ניהול רצפים</h2>
+<div class="topic-description">
+    ניהול רצפים מאפשר יצירת סדרה של ערכים לפי כללים מוגדרים מראש. רצפים שימושיים ביצירת ערכים ייחודיים ואוטומטיים למזהים.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>CREATE SEQUENCE</td>
+        <td>יצירת רצף</td>
+        <td>יצירת רצף חדש</td>
+        <td>CREATE SEQUENCE seq_name START WITH 1 INCREMENT BY 1</td>
+    </tr>
+    <tr>
+        <td>NEXT VALUE FOR</td>
+        <td>ערך הבא ברצף</td>
+        <td>קבלת הערך הבא ברצף</td>
+        <td>SELECT NEXT VALUE FOR seq_name</td>
+    </tr>
+    <tr>
+        <td>DROP SEQUENCE</td>
+        <td>מחיקת רצף</td>
+        <td>מחיקת רצף קיים</td>
+        <td>DROP SEQUENCE seq_name</td>
+    </tr>
+</table>
+
+<h2 id="security">ניהול אבטחה והרשאות</h2>
+<div class="topic-description">
+    אבטחת מסד הנתונים היא קריטית להגנה על המידע מפני גישה לא מורשית. ניהול הרשאות משתמשים מאפשר שליטה בגישה לנתונים ולפקודות השונות.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>GRANT</td>
+        <td>הענק הרשאה</td>
+        <td>הענקת הרשאה למשתמש</td>
+        <td>GRANT SELECT ON table_name TO user_name</td>
+    </tr>
+    <tr>
+        <td>REVOKE</td>
+        <td>ביטול הרשאה</td>
+        <td>ביטול הרשאה ממשתמש</td>
+        <td>REVOKE SELECT ON table_name FROM user_name</td>
+    </tr>
+    <tr>
+        <td>DENY</td>
+        <td>חסימת הרשאה</td>
+        <td>חסימת גישה לפקודה או לטבלה</td>
+        <td>DENY DELETE ON table_name TO user_name</td>
+    </tr>
+</table>
+
+<h2 id="transactions">ניהול טרנזקציות</h2>
+<div class="topic-description">
+    טרנזקציות מאפשרות לנהל סדרת פעולות כיחידה אחת ולהבטיח את שלמות הנתונים. ניהול טרנזקציות קריטי למניעת שגיאות ושמירת עקביות המידע.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>BEGIN TRANSACTION</td>
+        <td>התחל טרנזקציה</td>
+        <td>התחלת טרנזקציה חדשה</td>
+        <td>BEGIN TRANSACTION tran_name</td>
+    </tr>
+    <tr>
+        <td>COMMIT</td>
+        <td>אשר טרנזקציה</td>
+        <td>אישור טרנזקציה ושמירת השינויים</td>
+        <td>COMMIT TRANSACTION tran_name</td>
+    </tr>
+    <tr>
+        <td>ROLLBACK</td>
+        <td>ביטול טרנזקציה</td>
+        <td>ביטול טרנזקציה והשבת המצב לקדמותו</td>
+        <td>ROLLBACK TRANSACTION tran_name</td>
+    </tr>
+</table>
+
+<h2 id="backup">ניהול גיבויים ושחזורים</h2>
+<div class="topic-description">
+    גיבוי ושחזור מסד הנתונים הם תהליכים חיוניים להבטחת שמירת הנתונים ולהתאוששות מאסונות. כלים אלה מאפשרים ליצור עותקים של מסד הנתונים ולשחזרם במידת הצורך.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>BACKUP DATABASE</td>
+        <td>גבה מסד נתונים</td>
+        <td>יצירת גיבוי למסד הנתונים</td>
+        <td>BACKUP DATABASE db_name TO DISK = 'backup.bak'</td>
+    </tr>
+    <tr>
+        <td>RESTORE DATABASE</td>
+        <td>שחזר מסד נתונים</td>
+        <td>שחזור מסד נתונים מגיבוי</td>
+        <td>RESTORE DATABASE db_name FROM DISK = 'backup.bak'</td>
+    </tr>
+    <tr>
+        <td>BACKUP LOG</td>
+        <td>גבה לוג</td>
+        <td>יצירת גיבוי ליומן הטרנזקציות</td>
+        <td>BACKUP LOG db_name TO DISK = 'backup.trn'</td>
+    </tr>
+</table>
+
+<h2 id="spatial">נתונים גיאומטריים</h2>
+<div class="topic-description">
+    נתונים גיאומטריים מאפשרים לנהל ולנתח מידע גיאוגרפי במערכות מסדי נתונים. כלים אלה כוללים פעולות מרחביות, אחסון ותשאול של נתונים גיאומטריים.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>ST_GeomFromText</td>
+        <td>צור נתון גיאומטרי מטקסט</td>
+        <td>יצירת נתון גיאומטרי מטקסט WKT (Well-Known Text)</td>
+        <td>SELECT ST_GeomFromText('POINT(1 1)')</td>
+    </tr>
+    <tr>
+        <td>ST_Intersects</td>
+        <td>בדיקת חפיפה</td>
+        <td>בדיקת חפיפה בין שני אובייקטים גיאומטריים</td>
+        <td>SELECT ST_Intersects(geom1, geom2)</td>
+    </tr>
+    <tr>
+        <td>ST_Buffer</td>
+        <td>צור חיץ</td>
+        <td>יצירת חיץ סביב אובייקט גיאומטרי</td>
+        <td>SELECT ST_Buffer(geom, 10)</td>
+    </tr>
+</table>
+<h2 id="temporal">נתוני זמן ותאריך</h2>
+<div class="topic-description">
+    ניהול וניתוח של נתוני זמן ותאריך במסדי נתונים. כלים אלה מאפשרים עיבוד ושאילתות מורכבות על נתונים המתבססים על זמן ותאריך.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>GETDATE()</td>
+        <td>קבלת תאריך נוכחי</td>
+        <td>מחזיר את התאריך והשעה הנוכחיים</td>
+        <td>SELECT GETDATE()</td>
+    </tr>
+    <tr>
+        <td>DATEADD()</td>
+        <td>הוספת זמן</td>
+        <td>הוספת כמות מסוימת של זמן לערך תאריך</td>
+        <td>SELECT DATEADD(day, 10, '2024-12-13')</td>
+    </tr>
+    <tr>
+        <td>DATEDIFF()</td>
+        <td>הפרש תאריכים</td>
+        <td>החזרת ההפרש בין שני ערכי תאריך</td>
+        <td>SELECT DATEDIFF(day, '2024-12-01', '2024-12-13')</td>
+    </tr>
+</table>
+<h2 id="constraints">סוגי אילוצים</h2>
+<div class="topic-description">
+    אילוצים הם חוקים על העמודות בטבלאות שמבטיחים את שלמות המידע ואת עמידתו בתנאים מסוימים. הם מונעים הכנסת נתונים לא תקינים למסד הנתונים.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>PRIMARY KEY</td>
+        <td>מפתח ראשי</td>
+        <td>אילוץ שמבטיח ייחודיות ולא NULL בערכים</td>
+        <td>CREATE TABLE users (id INT PRIMARY KEY, name VARCHAR(50))</td>
+    </tr>
+    <tr>
+        <td>FOREIGN KEY</td>
+        <td>מפתח זר</td>
+        <td>אילוץ שמבטיח שהערך קיים בטבלה אחרת</td>
+        <td>ALTER TABLE orders ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id)</td>
+    </tr>
+    <tr>
+        <td>UNIQUE</td>
+        <td>ייחודי</td>
+        <td>אילוץ שמבטיח ייחודיות בערכים</td>
+        <td>CREATE TABLE employees (email VARCHAR(255) UNIQUE)</td>
+    </tr>
+</table>
+<h2 id="operators">סוגי אופרטורים</h2>
+<div class="topic-description">
+    אופרטורים הם סמלים המשמשים לביצוע פעולות על ערכים או משתנים. הם חלק חשוב בשאילתות SQL.
+</div>
+<table>
+    <tr>
+        <th>אופרטור</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>=</td>
+        <td>שווה ל-</td>
+        <td>השוואה בין שני ערכים</td>
+        <td>SELECT * FROM users WHERE age = 25</td>
+    </tr>
+    <tr>
+        <td>!=</td>
+        <td>שונה מ-</td>
+        <td>בדיקה אם שני ערכים אינם שווים</td>
+        <td>SELECT * FROM products WHERE price != 100</td>
+    </tr>
+    <tr>
+        <td>AND</td>
+        <td>וגם</td>
+        <td>חיבור תנאים עם AND</td>
+        <td>SELECT * FROM orders WHERE status = 'shipped' AND quantity > 10</td>
+    </tr>
+</table>
+<h2 id="errors">ספי שגיאה וטיפול בחריגים</h2>
+<div class="topic-description">
+    טיפול בחריגים מאפשר למערכת לנהל מצבים לא צפויים בצורה נכונה ולמנוע קריסות. זה כולל זיהוי, טיפול ודיווח על שגיאות.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>TRY...CATCH</td>
+        <td>נסה...תפוס</td>
+        <td>בלוק לטיפול בשגיאות</td>
+        <td>BEGIN TRY SELECT * FROM invalid_table END TRY BEGIN CATCH PRINT 'Error occurred' END CATCH</td>
+    </tr>
+    <tr>
+        <td>THROW</td>
+        <td>זרוק</td>
+        <td>זריקת שגיאה מותאמת</td>
+        <td>THROW 50000, 'Custom error message', 1</td>
+    </tr>
+    <tr>
+        <td>ERROR_MESSAGE()</td>
+        <td>הודעת שגיאה</td>
+        <td>החזרת הודעת השגיאה האחרונה</td>
+        <td>SELECT ERROR_MESSAGE()</td>
+    </tr>
+</table>
+<h2 id="performance">עקרונות אופטימיזציה</h2>
+<div class="topic-description">
+    אופטימיזציה של מסדי נתונים משפרת את ביצועי השאילתות ואת היעילות הכללית של המערכת. זה כולל תכנון נכון של אינדקסים, ניהול משאבים, ושיפור ביצועי השאילתות.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>EXPLAIN</td>
+        <td>הסבר</td>
+        <td>מציג את תוכנית הביצוע של שאילתה</td>
+        <td>EXPLAIN SELECT * FROM users WHERE age > 25</td>
+    </tr>
+    <tr>
+        <td>ANALYZE</td>
+        <td>ניתוח</td>
+        <td>מבצע ניתוח של טבלאות ואינדקסים לשיפור ביצועים</td>
+        <td>ANALYZE TABLE users</td>
+    </tr>
+    <tr>
+        <td>INDEX</td>
+        <td>אינדקס</td>
+        <td>יצירת אינדקס לשיפור ביצועי השאילתות</td>
+        <td>CREATE INDEX idx_age ON users(age)</td>
+    </tr>
+</table>
+<h2 id="basic-commands">פקודות בסיסיות</h2>
+<div class="topic-description">
+    פקודות בסיסיות הן היסודות לניהול נתונים במסדי נתונים. זה כולל יצירה, עדכון, מחיקה וקריאה של נתונים.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>SELECT</td>
+        <td>בחר</td>
+        <td>קריאה של נתונים מטבלה</td>
+        <td>SELECT * FROM users</td>
+    </tr>
+    <tr>
+        <td>INSERT</td>
+        <td>הוסף</td>
+        <td>הכנסת רשומה חדשה לטבלה</td>
+        <td>INSERT INTO users (name, age) VALUES ('John', 30)</td>
+    </tr>
+    <tr>
+        <td>UPDATE</td>
+        <td>עדכן</td>
+        <td>עדכון נתונים קיימים בטבלה</td>
+        <td>UPDATE users SET age = 31 WHERE name = 'John'</td>
+    </tr>
+</table>
+<h2 id="functions">פונקציות נפוצות</h2>
+<div class="topic-description">
+    פונקציות מובנות ב-SQL מאפשרות לבצע חישובים ולבצע עיבוד של נתונים בטבלאות. זה כולל פונקציות מתמטיות, מחרוזות, תאריכים ועוד.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>SUM()</td>
+        <td>סכום</td>
+        <td>חישוב סכום של עמודה</td>
+        <td>SELECT SUM(salary) FROM employees</td>
+    </tr>
+    <tr>
+        <td>AVG()</td>
+        <td>ממוצע</td>
+        <td>חישוב ממוצע של עמודה</td>
+        <td>SELECT AVG(age) FROM users</td>
+    </tr>
+    <tr>
+        <td>COUNT()</td>
+        <td>ספירה</td>
+        <td>ספירת מספר הרשומות בטבלה</td>
+        <td>SELECT COUNT(*) FROM orders</td>
+    </tr>
+</table>
+<h2 id="cursors">קורסורים</h2>
+<div class="topic-description">
+    קורסורים מאפשרים לעבור על רשומות בטבלה אחת אחת ולבצע פעולות מותאמות אישית על כל רשומה. הם שימושיים במצבים בהם יש צורך בטיפול פרטני בכל רשומה.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>DECLARE CURSOR</td>
+        <td>הצהר על קורסור</td>
+        <td>הצהרה על קורסור חדש</td>
+        <td>DECLARE cursor_name CURSOR FOR SELECT * FROM users</td>
+    </tr>
+    <tr>
+        <td>OPEN</td>
+        <td>פתח קורסור</td>
+        <td>פתיחת הקורסור לביצוע פעולות</td>
+        <td>OPEN cursor_name</td>
+    </tr>
+    <tr>
+        <td>FETCH</td>
+        <td>שלוף</td>
+        <td>שליפת הרשומה הבאה בקורסור</td>
+        <td>FETCH NEXT FROM cursor_name</td>
+    </tr>
+</table>
+<h2 id="query">שאילתות מתקדמות</h2>
+<div class="topic-description">
+    שאילתות מתקדמות כוללות שימוש בפונקציות מתקדמות, חיבורים מורכבים ותחביר מתקדם לניתוח ושאילתות על הנתונים בצורה יעילה ומעמיקה.
+</div>
+<table>
+    <tr>
+        <th>פקודה</th>
+        <th>תרגום לעברית</th>
+        <th>תיאור מורחב</th>
+        <th>דוגמה לשימוש</th>
+    </tr>
+    <tr>
+        <td>CTE (Common Table Expressions)</td>
+        <td>ביטוי טבלאות נפוצות</td>
+        <td>הצהרה על תת-שאילתה כטבלה זמנית לשימוש בשאילתה הראשית</td>
+        <td>WITH cte_name AS (SELECT * FROM users) SELECT * FROM cte_name WHERE age > 25</td>
+    </tr>
+    <tr>
+        <td>WINDOW FUNCTIONS</td>
+        <td>פונקציות חלון</td>
+        <td>ביצוע חישובים על קבוצה של שורות הקשורות ללוכד נתונים מסוים</td>
+        <td>SELECT ROW_NUMBER() OVER (ORDER BY salary) FROM employees</td>
+    </tr>
+    <tr>
+        <td>SUBQUERIES</td>
+        <td>תת-שאילתות</td>
+        <td>שאילתות פנימיות בתוך שאילתות אחרות</td>
+        <td>SELECT * FROM users WHERE id IN (SELECT user_id FROM orders WHERE amount > 100)</td>
+    </tr>
+</table>
+
+
+    <a href="#" class="back-to-top">חזרה למעלה</a>
+</body>
+</html>
